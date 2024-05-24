@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth')->group(function () {
-    Route::resource('post', PostController::class);
-    Route::resource('category', CategoryController::class);
+    Route::resource('posts', PostController::class);
+    Route::resource('categorys', CategoryController::class);
 });
 
 require __DIR__ . '/auth.php';
