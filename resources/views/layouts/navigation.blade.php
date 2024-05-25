@@ -15,12 +15,22 @@
                     <x-nav-link :href="route('feed')" :active="request()->routeIs('feed')">
                         Feed
                     </x-nav-link>
-                    <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
-                        Categories
-                    </x-nav-link>
-                    <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                        Posts
-                    </x-nav-link>
+                    @if (Auth::user()->role == 'admin')
+                        <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
+                            Categories
+                        </x-nav-link>
+                        <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                            Posts
+                        </x-nav-link>
+                    @endif
+
+                    @php($categories = \App\Models\Category::select('name')->get())
+
+                    @foreach ($categories as $category)
+                        <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                            {{ $category->name }}
+                        </x-nav-link>
+                    @endforeach
                 </div>
             </div>
 
@@ -84,12 +94,19 @@
             <x-responsive-nav-link :href="route('feed')" :active="request()->routeIs('feed')">
                 Feed
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
-                Categories
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('categories.index')">
-                Posts
-            </x-responsive-nav-link>
+            @foreach ($categories as $category)
+                <x-responsive-nav-link :href="route('feed')" :active="request()->routeIs('feed')">
+                    {{ $category->name }}
+                </x-responsive-nav-link>
+            @endforeach
+            @if (Auth::user()->role == 'admin')
+                <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
+                    Categories
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('categories.index')">
+                    Posts
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
