@@ -8,11 +8,15 @@ use Illuminate\Support\Facades\Redirect;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Fetch categories with only the specified columns: id, name, created_at
-        $categories = Category::select('id', 'name', 'created_at')->get();
-
+        if ($request->has('search')) {
+            $categoryName = $request->search;
+            $categories = Category::where('name', 'like', '%' . $categoryName . '%')->paginate(25);
+        } else {
+            $categories = Category::select('categories.*')->paginate(25);
+        }
         // Return a view named 'index' and pass the $categories variable to the view
         return view('categories.index')->with(compact('categories'));
     }
@@ -44,7 +48,14 @@ class CategoryController extends Controller
     public function edit($id)
     {
         // Return the edit view with the category data
-        return view('categories.edit', compact('category'));
+        $category = Category::find($id);
+
+        if ($category) {
+            return view('categories.edit', compact('category'));
+        } else {
+            // Redirect to a specific route or view to show the error message
+            return redirect()->route('categories.index')->withErrors(['error' => 'Category not found']);
+        }
     }
 
     public function update(Request $request, $id)
@@ -83,7 +94,7 @@ class CategoryController extends Controller
                 return redirect()->back()->withErrors(['error' => 'Category not found']);
             }
         } catch (\Exception $e) {
-            // Handle the exception, maybe log it or display an error message
+            // Handle the exception, maybe log it or di splay an error message
             return redirect()->back()->withErrors(['error' => 'Error deleting category']);
         }
     }
