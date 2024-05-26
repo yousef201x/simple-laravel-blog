@@ -1,3 +1,6 @@
+{{-- Get Categories to display --}}
+@php($categories = \App\Models\Category::select('name')->get())
+
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,6 +18,13 @@
                     <x-nav-link :href="route('feed')" :active="request()->routeIs('feed')">
                         Feed
                     </x-nav-link>
+
+                    @foreach ($categories as $category)
+                        <x-nav-link :href="route('feed', ['category' => $category->name])" :active="request()->routeIs('feed') && request('category') === $category->name">
+                            {{ $category->name }}
+                        </x-nav-link>
+                    @endforeach
+
                     @if (Auth::user()->role == 'admin')
                         <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
                             Categories
@@ -23,14 +33,6 @@
                             Posts
                         </x-nav-link>
                     @endif
-
-                    @php($categories = \App\Models\Category::select('name')->get())
-
-                    @foreach ($categories as $category)
-                        <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                            {{ $category->name }}
-                        </x-nav-link>
-                    @endforeach
                 </div>
             </div>
 
