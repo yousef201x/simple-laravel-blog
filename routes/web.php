@@ -17,8 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('feed/{category?}', [FeedController::class, 'handleFeedCategory'])->name('feed');
 
+    Route::get('/', function () {
+        return redirect()->route('feed');
+    });
+
+    Route::get('feed/{category?}', [FeedController::class, 'handleFeedCategory'])->name('feed');
 
     // profile routes
     Route::group([], function () {
