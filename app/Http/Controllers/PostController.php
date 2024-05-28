@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -35,16 +36,35 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'image_path' => 'nullable|image',
             'category_id' => 'required|exists:categories,id',
             'user_id' => 'required|exists:users,id',
         ]);
 
         try {
-            // Create a new post using the validated data
-            Post::create($validatedData);
+
+            if ($request->file('image_path')) {
+                $imagePath = $request->file('image_path')->store('images');
+                $imagePath = asset('storage/' . $imagePath);
+                Post::create([
+                    'title' => $request->title,
+                    'content' => $request->content,
+                    'image_path' => $imagePath,
+                    'category_id' => $request->category_id,
+                    'user_id' => $request->user_id,
+                ]);
+            } else {
+                // Create a new post using the validated data
+                Post::create([
+                    'title' => $request->title,
+                    'content' => $request->content,
+                    'category_id' => $request->category_id,
+                    'user_id' => $request->user_id,
+                ]);
+            }
 
             // Return a redirect with a success flash session message
             return redirect()->route('posts.index')->with('success', 'Post created successfully');
